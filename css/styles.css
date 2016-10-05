@@ -1,0 +1,77 @@
+body{
+  background-image: url("images/background.jpg");
+  background-repeat: repeat-y;
+  background-size: 100%;
+}
+div#base {
+  width: 100px;
+  height: 100px;
+  background-image: url("images/CastlePurp.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+
+  position: absolute;
+  top: 40vh;
+  left: 85vw;
+}
+div#div2 {
+  width: 50px;
+  height: 50px;
+  background-image: url("images/Eraserman.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+
+/*~~~~~~~~~~~~~~~Footer Styling~~~~~~~~~~~~~~~*/
+p#debug{
+  position: absolute;
+  top: 95vh;
+}
+footer{
+  background-color: dodgerblue;
+  position: absolute;
+  top: 90vh;
+  width: 100%;
+  height: 10vh;
+}
+div.score{
+  margin: 2vh;
+  font-size: 16px;
+  width: 15%;
+  display: block;
+  float: left;
+}
+div#current_score{
+  width: 30%;
+}
+div.menu{
+  width: 50px;
+  height: 50px;
+  float: right;
+  margin: 1vh 2vw;
+  border: 2px solid black;
+  /*add styling to center images*/
+
+  background-image: url("images/Eraserman.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+div#menu_straw{
+  width: 50px;
+  height: 50px;
+  position: relative;
+
+  background-image: url("images/Straw.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+div#menu_match{
+  width: 50px;
+  height: 50px;
+  position: relative;
+
+  background-image: url("images/Match.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+}

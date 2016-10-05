@@ -1,0 +1,30 @@
+Phil Winchester - Project 1 Proposal
+
+Idea: Drag and Drop - Base Defense Game
+
+Objective: Using jQuery-UI have a simple drag and drop base defense
+game. The game will have two paths that enemies can walk down and
+the user will have to place 2-3 defensive units along the path.
+
+Challenges: Dynamically programming enemies and managing location,
+movement, damage, etc. Class based units. Anchoring units after
+placement. General game mechanics implementation limited by DOM and
+using jQuery. Managing time and meeting daily goals.
+
+10/4 - Draggable units in nav bar on bottom of window
+10/5 - Enemy units following fixed path to base. On collision
+  deal damage and destroy base.
+10/6 - Defensive units attack and do damage to enemies.
+10/7 - Adding resources and limit which units user can create
+10/8 - Catch up and bug fix day...b/c those always pop up
+10/9 - Additional features? more likely more bug fixes!!
+10/10 - Finalize and submit by Midnight
+10/11 - Present
+
+Resources: Images already acquired from previous project.
+  Found collision detection function on stackOverflow.
+Styling:
+
+DOM: Movement of units. Animation of units? on event change image
+
+OOP: Classes for each unity with inheritance. 
