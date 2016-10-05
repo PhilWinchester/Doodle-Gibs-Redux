@@ -1,12 +1,12 @@
 body{
-  background-image: url("images/background.jpg");
+  background-image: url("../images/background.jpg");
   background-repeat: repeat-y;
   background-size: 100%;
 }
-div#base {
+div#castle {
   width: 100px;
   height: 100px;
-  background-image: url("images/CastlePurp.png");
+  background-image: url("../images/CastlePurp.png");
   background-repeat: no-repeat;
   background-size: contain;
 
@@ -14,14 +14,36 @@ div#base {
   top: 40vh;
   left: 85vw;
 }
-div#div2 {
+div.erase {
   width: 50px;
   height: 50px;
-  background-image: url("images/Eraserman.png");
+  position: relative;
+
+  background-image: url("../images/Eraserman.png");
   background-repeat: no-repeat;
   background-size: contain;
 }
+div.match {
+  width: 50px;
+  height: 50px;
+  position: relative;
 
+  background-image: url("../images/Match.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+div.straw {
+  width: 50px;
+  height: 50px;
+  position: relative;
+
+  background-image: url("../images/Straw.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+/*div{
+  display: inline-block;
+}*/
 
 /*~~~~~~~~~~~~~~~Footer Styling~~~~~~~~~~~~~~~*/
 p#debug{
@@ -51,18 +73,15 @@ div.menu{
   float: right;
   margin: 1vh 2vw;
   border: 2px solid black;
+  display: block;
   /*add styling to center images*/
-
-  background-image: url("images/Eraserman.png");
-  background-size: contain;
-  background-repeat: no-repeat;
 }
 div#menu_straw{
   width: 50px;
   height: 50px;
   position: relative;
 
-  background-image: url("images/Straw.png");
+  background-image: url("../images/Straw.png");
   background-size: contain;
   background-repeat: no-repeat;
 }
@@ -71,7 +90,7 @@ div#menu_match{
   height: 50px;
   position: relative;
 
-  background-image: url("images/Match.png");
+  background-image: url("../images/Match.png");
   background-size: contain;
   background-repeat: no-repeat;
 }
