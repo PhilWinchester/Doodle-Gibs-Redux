@@ -2,13 +2,13 @@ console.log("JAVASCRIPT LOADED");
 
 $(function(){
   console.log("DOM LOADED");
-  var enemyList = [];
+  var enemyObjList = [];
 
+  var grid = new Grid();
+  var gridObj = grid.getGrid();
 
   var castle = new Castle();
   $("body").append(castle);
-  // $(".menu").eq(0).css("background-image", "url(../images/Match.png)");
-  // $(".menu").eq(1).css("background-image", "url(../images/Straw.png)");
 
   $(".menu").on("click", function(){
     if (event.target.id === "menu_straw") {
@@ -23,20 +23,22 @@ $(function(){
   })
 
   for (var i = 0; i < 5; i++) {
-    let unit = new Eraserman();
-    let unit2 = new Match();
-    let unit3 = new Straw();
+    let eraseObj = new Eraserman(grid);
+    let eraseDom = eraseObj.getUnit();
 
-    enemyList.push(unit);
+    var yCoord = Math.floor(Math.random() * gridObj[0].length);
+    var boxCoords = grid.getCenter(0,yCoord);
 
-    $("body").append(unit);
-    $("body").append(unit2);
-    $("body").append(unit3);
+    console.log(Math.floor(boxCoords[0]) + " : " + Math.floor(boxCoords[1]));
+
+    eraseDom.css({"left":Math.floor(boxCoords[0])+"px", "top":Math.floor(boxCoords[1])+"px"});
+
+    enemyObjList.push(eraseObj);
+    $(".grid").append(eraseDom);
   };
-
-  window.setInterval(function() {
-    enemyList.map(march());
-  }, 200)
+  // window.setInterval(function() {
+  //   enemyObjList[0].march();
+  // }, 1000)
 });
 
 // window.setInterval(function() {
@@ -69,9 +71,41 @@ function collision($unit1, $unit2) {
 }
 
 /*~~~~~~~~~~~~~CLASSES~~~~~~~~~~~~~*/
+class Grid {
+  constructor(){
+    this.grid = [];
+
+    for (var x = 0; x < 15; x++) {
+      var column = [];
+      for (var y = 0; y < 10; y++) {
+        var box = $("<div>");
+        box.attr("class", "box");
+        // box.data({colNum:x,rowNum:y})
+        column.push(box);
+        $(".grid").append(box);
+      }
+      this.grid.push(column);
+    }
+  }
+  getGrid(){
+    return this.grid;
+  }
+  getCenter(x,y){
+    let box = this.grid[x][y];
+    let offset = box.offset();
+    let height = box.height();
+    let width = box.width();
+
+    let centerX = offset.left //+ width / 2;
+    let centerY = offset.top //+ height / 2;
+
+    return [centerX, centerY];
+  }
+}
 class Unit {
   constructor(){
-    console.log("made Unit");
+    this.x = 0;
+    this.y = 0;
   }
   onCollision(collider){
     console.log(collider.attr("id"));
@@ -79,29 +113,46 @@ class Unit {
       console.log("damaging");
     }
   }
+  setCoords(x,y){
+    this.x = x;
+    this.y = y;
+  }
+  getCoords(){
+    return [this.x, this.y];
+  }
 }
 class Eraserman extends Unit {
-  constructor(){
+  constructor(grid){
     super();
-    console.log("made Eraserman");
-    this.movementX = .1;
+    this.grid = grid;
 
     this.unit = $("<div>");
     this.unit.attr("class", "erase");
     this.unit.offset({"left": $(window).width() * this.movementX, "top": $(window).height() * .4});
+    // this.unit.draggable();
     // this.unit.offset({"left": "10vw", "top": "40vh"});
-
+  }
+  getUnit(){
     return this.unit;
   }
   march(){
-    this.movementX += .1
-    this.unit.offset({"left": $(window).width() * this.movementX});
+    // this.unit.offset({"left": $(window).width() * this.movementX});
+    this.x += 1;
+    console.log(this.x);
+
+    var boxCoords = this.grid.getCenter(this.x,this.y);
+
+    console.log(Math.floor(boxCoords[0]) + " : " + Math.floor(boxCoords[1]));
+
+    this.unit.css({"left":Math.floor(boxCoords[0])+"px", "top":Math.floor(boxCoords[1])+"px"});
+
+
+
   }
 }
 class Match extends Unit {
   constructor(){
     super();
-    console.log("made Match");
 
     this.unit = $("<div>")
     this.unit.attr("class", "match")
@@ -114,7 +165,6 @@ class Match extends Unit {
 class Straw extends Unit {
   constructor() {
     super();
-    console.log("made Straw");
 
     this.unit = $("<div>")
     this.unit.attr("class", "straw")
@@ -126,7 +176,7 @@ class Straw extends Unit {
 }
 class Castle {
   constructor() {
-    console.log("made Castle");
+    // console.log("made Castle");
 
     this.unit = $("<div>")
     this.unit.attr("id", "castle")

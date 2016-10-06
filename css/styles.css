@@ -3,6 +3,19 @@ body{
   background-repeat: repeat-y;
   background-size: 100%;
 }
+div.grid{
+  width: 90vw;
+  height: 90vh;
+
+  display: inline-flex;
+  flex-flow: column wrap;
+  align-content: space-around;
+}
+div.box{
+  border: .2px solid firebrick;
+  width: 5vw;
+  height: 8vh;
+}
 div#castle {
   width: 100px;
   height: 100px;
@@ -17,7 +30,8 @@ div#castle {
 div.erase {
   width: 50px;
   height: 50px;
-  position: relative;
+  position: absolute;
+  display: fixed;
 
   background-image: url("../images/Eraserman.png");
   background-repeat: no-repeat;
@@ -41,9 +55,6 @@ div.straw {
   background-repeat: no-repeat;
   background-size: contain;
 }
-/*div{
-  display: inline-block;
-}*/
 
 /*~~~~~~~~~~~~~~~Footer Styling~~~~~~~~~~~~~~~*/
 p#debug{
