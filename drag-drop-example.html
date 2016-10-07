@@ -35,7 +35,8 @@
   $(function () {
     var cloneable = false;
     $(".square").draggable({
-      drag: [20,20]
+      helper: "clone",
+      grid: [50,20]
     });
     $(".squaredotted").droppable({
       drop: function() {
@@ -48,19 +49,19 @@
         $("#info").html("moving out!");
       }
       });
-    // $(".square").eq(0).on("mouseup",function() {
-    //   if (cloneable) {
-    //     var $clone = $(".square").eq(0).clone().appendTo("body");
-    //       $clone.attr("class","square").draggable();
-    //   }
-    // });
-    // $("input").on("click",function(){
-    //   if (cloneable) {
-    //     cloneable = false;
-    //   } else {
-    //     cloneable = true;
-    //   }
-    // });
+    $(".square").eq(0).on("mouseup",function() {
+      if (cloneable) {
+        var $clone = $(".square").eq(0).clone().appendTo("body");
+          $clone.attr("class","square").draggable();
+      }
+    });
+    $("input").on("click",function(){
+      if (cloneable) {
+        cloneable = false;
+      } else {
+        cloneable = true;
+      }
+    });
 });
 </script>
 

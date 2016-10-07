@@ -10,17 +10,38 @@ $(function(){
   var castle = new Castle();
   $("body").append(castle);
 
-  $(".menu").on("click", function(){
-    if (event.target.id === "menu_straw") {
-      var unit = new Straw();
-    } else if (event.target.id === "menu_match") {
-      var unit = new Match();
+  $(".menu").draggable({
+    helper: "clone",
+    grid: [5,5],
+    // grid: [Math.floor($(window).width() / 15), Math.floor($(window).height() / 10)],
+    start: function(){
+      // console.log(String($(this).attr("id")));
+      var elemClass = String($(this).attr("id")).split("_")[1];
+
+      $(".menu").eq($(".menu").length - 1).addClass(elemClass);
+      $(".menu").eq($(".menu").length - 1).removeClass("menu");
+      // $(".menu").eq($(".menu").length - 1).removeAttr("menu_"+elemClass);
+    },
+    end: function(){
+      console.log($(this).data());
     }
+  });
+  $(".box").droppable({
+    drop: function(e,ui){
+      var newUnit = $(ui.helper).clone();
 
-    //append to list of user units
+      newUnit.removeClass("ui-draggable ui-draggable-dragging ui-draggable-handle");
 
-    $("body").append(unit);
-  })
+      var colNum = $(this).data().colNum;
+      var rowNum = $(this).data().rowNum;
+
+      var boxCoords = grid.getCenter(colNum, rowNum)
+
+      newUnit.css({"left":Math.floor(boxCoords[0])+"px", "top":Math.floor(boxCoords[1])+"px"})
+
+      $(".grid").append(newUnit);
+    }
+  });
 
   for (var i = 0; i < 5; i++) {
     let eraseObj = new Eraserman(grid);
@@ -37,10 +58,12 @@ $(function(){
   };
   window.setInterval(function() {
     for (var i = 0; i < enemyObjList.length; i++) {
-      enemyObjList[i].march();
+      // enemyObjList[i].march();
     }
   }, 1000)
 });
+
+/*spawn units on row 15 column 10 and move them up if overlap*/
 
 // window.setInterval(function() {
 //     $('#result').text(collision($('#base'), $('#div2')));
@@ -76,12 +99,12 @@ class Grid {
   constructor(){
     this.grid = [];
 
-    for (var x = 0; x < 15; x++) {
+    for (var x = 0; x < 10; x++) {
       var column = [];
-      for (var y = 0; y < 10; y++) {
+      for (var y = 0; y < 5; y++) {
         var box = $("<div>");
         box.attr("class", "box");
-        // box.data({colNum:x,rowNum:y})
+        box.data({colNum:x,rowNum:y})
         column.push(box);
         $(".grid").append(box);
       }
@@ -97,8 +120,8 @@ class Grid {
     let height = box.height();
     let width = box.width();
 
-    let centerX = offset.left //+ width / 2;
-    let centerY = offset.top //+ height / 2;
+    let centerX = offset.left; //+ width / 2;
+    let centerY = offset.top; //+ height / 2;
 
     return [centerX, centerY];
   }
