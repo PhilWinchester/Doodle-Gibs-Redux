@@ -27,18 +27,19 @@ $(function(){
     let eraseDom = eraseObj.getUnit();
 
     var yCoord = Math.floor(Math.random() * gridObj[0].length);
+    eraseObj.setCoords(0,yCoord);
     var boxCoords = grid.getCenter(0,yCoord);
-
-    console.log(Math.floor(boxCoords[0]) + " : " + Math.floor(boxCoords[1]));
 
     eraseDom.css({"left":Math.floor(boxCoords[0])+"px", "top":Math.floor(boxCoords[1])+"px"});
 
     enemyObjList.push(eraseObj);
     $(".grid").append(eraseDom);
   };
-  // window.setInterval(function() {
-  //   enemyObjList[0].march();
-  // }, 1000)
+  window.setInterval(function() {
+    for (var i = 0; i < enemyObjList.length; i++) {
+      enemyObjList[i].march();
+    }
+  }, 1000)
 });
 
 // window.setInterval(function() {
@@ -128,36 +129,38 @@ class Eraserman extends Unit {
 
     this.unit = $("<div>");
     this.unit.attr("class", "erase");
-    this.unit.offset({"left": $(window).width() * this.movementX, "top": $(window).height() * .4});
-    // this.unit.draggable();
-    // this.unit.offset({"left": "10vw", "top": "40vh"});
+
+    var boxCoords = this.grid.getCenter(this.x,this.y);
+    this.unit.css({"left":Math.floor(boxCoords[0])+"px",
+      "top":Math.floor(boxCoords[1])+"px"
+    });
   }
   getUnit(){
     return this.unit;
   }
   march(){
-    // this.unit.offset({"left": $(window).width() * this.movementX});
     this.x += 1;
-    console.log(this.x);
 
     var boxCoords = this.grid.getCenter(this.x,this.y);
-
-    console.log(Math.floor(boxCoords[0]) + " : " + Math.floor(boxCoords[1]));
-
     this.unit.css({"left":Math.floor(boxCoords[0])+"px", "top":Math.floor(boxCoords[1])+"px"});
-
-
-
   }
 }
 class Match extends Unit {
   constructor(){
     super();
 
+    /*
+    1 - spawns absolute fixed
+    2 - on click becomes draggable
+    3 - on release snaps to grid
+    */
+
     this.unit = $("<div>")
     this.unit.attr("class", "match")
-    this.unit.offset({"left": $(window).width() * .2, "top": $(window).height() * .4});
+    this.unit.css({"left": $(window).width() * .2, "top": $(window).height() * .4});
     // this.unit.offset({"left": "20vw", "top": "40vh"});
+
+    this.unit.draggable();
 
     return this.unit;
   }
