@@ -12,7 +12,7 @@ div.grid{
   align-content: flex-start;
 }
 div.box{
-  border: .2px solid firebrick;
+  border: .1px solid firebrick;
   width: 8vw;
   height: 16vh;
 }
@@ -26,6 +26,9 @@ div#castle {
   position: absolute;
   top: 40vh;
   left: 85vw;
+  padding-top: 5px;
+
+  text-align: left;
 }
 div.erase, div.match, div.straw{
   width: 50px;
@@ -54,8 +57,10 @@ p#debug{
   top: 95vh;
 }
 footer{
-  background-color: dodgerblue;
+  background: linear-gradient(rgba(30,144,255,1), rgba(30,144,255,.8));
   position: absolute;
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
   top: 90vh;
   width: 100%;
   height: 10vh;
