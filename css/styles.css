@@ -12,7 +12,9 @@ div.grid{
   align-content: flex-start;
 }
 div.box{
-  border: .1px solid firebrick;
+  border: .1px dotted rgba(178,31,39,.5);
+  border-radius: .2rem;
+  margin: 1px;
   width: 8vw;
   height: 16vh;
 }
@@ -47,6 +49,14 @@ div.match {
 }
 div.straw {
   background-image: url("../images/Straw.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+div.spitball {
+  width: 25px;
+  height: 25px;
+
+  background-image: url("../images/spitball.png");
   background-repeat: no-repeat;
   background-size: contain;
 }

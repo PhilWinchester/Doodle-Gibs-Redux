@@ -3,7 +3,7 @@ console.log("SCRIPTS LOADED");
 $(function(){
   console.log("DOM LOADED");
   var enemyObjList = [];
-  var unitObjList = [];
+  var strawObjList = [];
   var timerId;
 
   var grid = new Grid();
@@ -11,6 +11,7 @@ $(function(){
 
   var castle = new Castle();
   var castleDom = castle.getCastle();
+
   $("body").append(castleDom);
 
   $(".menu").draggable({
@@ -31,10 +32,11 @@ $(function(){
 
       if (newDom.attr("class") === "straw") {
         console.log("straw");
-        var newUnit = new Straw();
+        var newUnit = new Straw(grid);
+        strawObjList.push(newUnit);
       } else if (newDom.attr("class") === "match") {
         console.log("match");
-        var newUnit = new Match();
+        var newUnit = new Match(grid);
       }
 
       var colNum = $(this).data().colNum;
@@ -46,11 +48,11 @@ $(function(){
       newDom.css({"left":Math.floor(boxCoords[0])+"px", "top":Math.floor(boxCoords[1])+"px"})
       gridObj[colNum][rowNum].append(newDom);
 
-      unitObjList.push(newUnit);
+      // unitObjList.push(newUnit);
     }
   });
 
-  for (var i = 0; i < 5; i++) {
+  for (var i = 0; i < 2; i++) {
     let eraseObj = new Eraserman(grid);
     let eraseDom = eraseObj.getUnit();
 
@@ -70,16 +72,37 @@ $(function(){
       return;
     }
     timerId = setInterval(function(){
-      console.log("starting timer");
       for (var i = 0; i < enemyObjList.length; i++) {
-        enemyObjList[i].march();
+        enemyObjList[i].march(castle);
+      }
+      for (var j = 0; j < strawObjList.length; j++) {
+        strawObjList[j].shoot();
+        // for (var j = 0; j < spitballDomList.length; j++) {
+        //   var gridCoords = strawObjList[i].getCoords();
+        //   var boxCoords = grid.getCenter((gridCoords[0] - j),gridCoords[1]);
+        //   console.log(spitballDomList[j]);
+        //   spitballDomList[j].css({"left":Math.floor(boxCoords[0])+"px", "top":Math.floor(boxCoords[1])+"px"});
+        // }
       }
     }, 1000);
   }
+  // var spitballTimer = function(event){
+  //   if (spitballTimerId) {
+  //     return;
+  //   }
+  //   spitballTimerId = setInterval(function(){
+  //     if ($(".spitball").length) {
+  //       console.log("spitball moving");
+  //       var xCoord = $(".spitball").offset().left;
+  //       xCoord = Math.floor(xCoord -= 5)
+  //       $(".spitball").css({"left": String(xCoord) + "px"});
+  //     }
+  //   }, 2000);
+  // }
   var stopTimer = function(event) {
     clearInterval(timerId);
     timerId = null;
-    console.log('stop Timer');
+    spitballTimerId = null;
   }
   $("#castle").on("click",function(event) {
     if (timerId) {
@@ -140,47 +163,74 @@ class Unit {
   getCoords(){
     return [this.x, this.y];
   }
-  getNeighbors(){
-    return []
-  }
 }
 class Eraserman extends Unit {
   constructor(grid){
     super();
-    this.grid = grid;
 
+    this.grid = grid;
     this.unit = $("<div>");
     this.unit.attr("class", "erase");
   }
   getUnit(){
     return this.unit;
   }
-  march(){
+  march(castle){
     let gridList = this.grid.getGrid();
-    // console.log("Column: " + (this.x + 2) + " Row: " + this.y);
-    // gridList[this.x + 2][this.y].css("background-color","rgba(255,0,0,.5)");
-    // console.log(gridList[this.x + 2][this.y].children().attr("class"));
 
-    if (gridList[this.x + 1][this.y].children().attr("class") === "straw" ||
-      gridList[this.x + 1][this.y].children().attr("class") === "match") {
-      console.log("WATCH OUT");
-      // console.log("Row: " + (this.x + 1) + " : " + "Column: " + this.y);
-      gridList[this.x + 1][this.y].empty();
+    if (this.x != gridList.length - 1) {
+      // console.log(String(this.x) + " : " + String(gridList.length - 1));
+      if (gridList[this.x + 1][this.y].children().attr("class") === "straw") {
+        console.log("straw ahead");
+
+        gridList[this.x + 1][this.y].empty();
+      } else if (gridList[this.x + 1][this.y].children().attr("class") === "match") {
+        console.log("match ahead");
+        this.unit.remove();
+        gridList[this.x +1][this.y].empty();
+      }
+
+      this.x += 1;
+      var boxCoords = this.grid.getCenter(this.x,this.y);
+      this.unit.css({"left":Math.floor(boxCoords[0])+"px", "top":Math.floor(boxCoords[1])+"px"});
+    } else {
+      var health = castle.damage();
+      let castleDom = castle.getCastle();
+      castleDom.text("Health: " + health);
+      if (health < 0) {
+        // alert("GAME OVER");
+        castleDom.remove();
+      }
     }
-    this.x += 1;
-
-    var boxCoords = this.grid.getCenter(this.x,this.y);
-    this.unit.css({"left":Math.floor(boxCoords[0])+"px", "top":Math.floor(boxCoords[1])+"px"});
   }
 }
 class Match extends Unit {
-  constructor(){
+  constructor(grid){
     super();
+    this.grid = grid;
+  }
+  explode(){
+    console.log("exploding");
   }
 }
 class Straw extends Unit {
-  constructor() {
+  constructor(grid){
     super();
+    this.grid = grid;
+    this.gridObj = this.grid.getGrid();
+  }
+  shoot(){
+    console.log("shooting");
+
+    var spitball = $("<div>");
+    spitball.attr("class","spitball");
+    // var boxCoords = this.grid.getCenter(this.x,this.y);
+    // spitball.css({"left":Math.floor(boxCoords[0])+"px", "top":Math.floor(boxCoords[1])+"px"});
+    this.gridObj[this.x][this.y].append(spitball);
+
+    // boxCoords = this.grid.getCenter(this.x - 1,this.y);
+    // $(".spitball").css({"left":Math.floor(boxCoords[0])+"px", "top":Math.floor(boxCoords[1])+"px"});
+    this.gridObj[this.x - 1][this.y].append(spitball);
   }
 }
 class Castle {
@@ -194,5 +244,10 @@ class Castle {
   }
   getCastle(){
     return this.unit;
+  }
+  damage(){
+    this.health -= 1;
+    console.log(this.health);
+    return this.health
   }
 }
