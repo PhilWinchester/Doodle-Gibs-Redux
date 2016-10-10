@@ -213,8 +213,9 @@ class Eraserman extends Unit {
       // this.unit = null;
       if (health < 0) {
         castleDom.remove();
-        stopTimer();
         alert("GAME OVER");
+        stopTimer();
+        // alert("GAME OVER");
       }
     }
   }
