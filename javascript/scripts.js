@@ -1,10 +1,28 @@
 console.log("SCRIPTS LOADED");
 
+/*
+current state of the game
+-you can lose
+-you cannot win
+-killing units does not always delete the object and/or the dom element
+-the interaction between the elements is unclear and the game will stop
+  working when some units die but now when others die
+
+~~~~~~Things to add~~~~~~
+- resources
+- animations
+- less overzelous goals
+
+*/
+
+//I know this is a big no no but I used it as a quick fix...sorry
+var enemyObjList = [];
+
 $(function(){
   console.log("DOM LOADED");
-  var enemyObjList = [];
   var strawObjList = [];
   var timerId;
+  var eraseData = 0;
 
   var grid = new Grid();
   var gridObj = grid.getGrid();
@@ -52,53 +70,36 @@ $(function(){
     }
   });
 
-  for (var i = 0; i < 2; i++) {
-    let eraseObj = new Eraserman(grid);
-    let eraseDom = eraseObj.getUnit();
-
-    var yCoord = Math.floor(Math.random() * gridObj[0].length);
-    eraseObj.setCoords(0,yCoord);
-
-    var boxCoords = grid.getCenter(0,yCoord);
-    eraseDom.css({"left":Math.floor(boxCoords[0])+"px", "top":Math.floor(boxCoords[1])+"px"});
-    gridObj[0][yCoord].append(eraseDom);
-
-    enemyObjList.push(eraseObj);
-  };
-
   //timer start stop for debugging purposes
   var startTimer = function(event) {
     if (timerId) {
       return;
     }
     timerId = setInterval(function(){
+      if (castle.getHealth() > 0) {
+        let eraseObj = new Eraserman(grid);
+        let eraseDom = eraseObj.getUnit();
+        // eraseDom.data("unitNum",eraseData)
+        eraseDom.attr("id","num" + eraseData)
+
+        var yCoord = Math.floor(Math.random() * gridObj[0].length);
+        if (gridObj[0][yCoord].children()) {
+          yCoord = Math.floor(Math.random() * gridObj[0].length);
+        }
+
+        eraseObj.setCoords(0,yCoord);
+        gridObj[0][yCoord].append(eraseDom);
+        enemyObjList.push(eraseObj)
+        eraseData++;
+      }
       for (var i = 0; i < enemyObjList.length; i++) {
         enemyObjList[i].march(castle);
       }
       for (var j = 0; j < strawObjList.length; j++) {
         strawObjList[j].shoot();
-        // for (var j = 0; j < spitballDomList.length; j++) {
-        //   var gridCoords = strawObjList[i].getCoords();
-        //   var boxCoords = grid.getCenter((gridCoords[0] - j),gridCoords[1]);
-        //   console.log(spitballDomList[j]);
-        //   spitballDomList[j].css({"left":Math.floor(boxCoords[0])+"px", "top":Math.floor(boxCoords[1])+"px"});
-        // }
       }
     }, 1000);
   }
-  // var spitballTimer = function(event){
-  //   if (spitballTimerId) {
-  //     return;
-  //   }
-  //   spitballTimerId = setInterval(function(){
-  //     if ($(".spitball").length) {
-  //       console.log("spitball moving");
-  //       var xCoord = $(".spitball").offset().left;
-  //       xCoord = Math.floor(xCoord -= 5)
-  //       $(".spitball").css({"left": String(xCoord) + "px"});
-  //     }
-  //   }, 2000);
-  // }
   var stopTimer = function(event) {
     clearInterval(timerId);
     timerId = null;
@@ -171,35 +172,49 @@ class Eraserman extends Unit {
     this.grid = grid;
     this.unit = $("<div>");
     this.unit.attr("class", "erase");
+    this.health = 5;
   }
   getUnit(){
     return this.unit;
+  }
+  damage(){
+    this.health--;
+    if (this.health < 0) {
+      this.unit.remove();
+      this.unit = null;
+    }
   }
   march(castle){
     let gridList = this.grid.getGrid();
 
     if (this.x != gridList.length - 1) {
       // console.log(String(this.x) + " : " + String(gridList.length - 1));
-      if (gridList[this.x + 1][this.y].children().attr("class") === "straw") {
-        console.log("straw ahead");
+      if (gridList[this.x + 1][this.y].children()) {
+        if (gridList[this.x + 1][this.y].children().attr("class") === "straw") {
+          console.log("straw ahead");
 
-        gridList[this.x + 1][this.y].empty();
-      } else if (gridList[this.x + 1][this.y].children().attr("class") === "match") {
-        console.log("match ahead");
-        this.unit.remove();
-        gridList[this.x +1][this.y].empty();
+          gridList[this.x + 1][this.y].empty();
+        } else if (gridList[this.x + 1][this.y].children().attr("class") === "match") {
+          console.log("match ahead");
+          this.unit.remove();
+          this.unit = null;
+          gridList[this.x + 1][this.y].empty();
+        }
+
+        this.x += 1;
+        gridList[this.x][this.y].append(this.unit);
       }
-
-      this.x += 1;
-      var boxCoords = this.grid.getCenter(this.x,this.y);
-      this.unit.css({"left":Math.floor(boxCoords[0])+"px", "top":Math.floor(boxCoords[1])+"px"});
     } else {
       var health = castle.damage();
       let castleDom = castle.getCastle();
       castleDom.text("Health: " + health);
+
+      gridList[this.x][this.y].empty();
+      // this.unit = null;
       if (health < 0) {
-        // alert("GAME OVER");
         castleDom.remove();
+        stopTimer();
+        alert("GAME OVER");
       }
     }
   }
@@ -217,20 +232,56 @@ class Straw extends Unit {
   constructor(grid){
     super();
     this.grid = grid;
-    this.gridObj = this.grid.getGrid();
+    this.spitballObj = [];
   }
   shoot(){
-    console.log("shooting");
+    var gridObj = this.grid.getGrid();
 
-    var spitball = $("<div>");
-    spitball.attr("class","spitball");
-    // var boxCoords = this.grid.getCenter(this.x,this.y);
-    // spitball.css({"left":Math.floor(boxCoords[0])+"px", "top":Math.floor(boxCoords[1])+"px"});
-    this.gridObj[this.x][this.y].append(spitball);
+    var spitballObj = new Spitball(this.grid);
+    var spitballDom = spitballObj.getSpitball();
 
-    // boxCoords = this.grid.getCenter(this.x - 1,this.y);
-    // $(".spitball").css({"left":Math.floor(boxCoords[0])+"px", "top":Math.floor(boxCoords[1])+"px"});
-    this.gridObj[this.x - 1][this.y].append(spitball);
+    spitballObj.setCoords(this.x, this.y);
+
+    var boxCoords = this.grid.getCenter(this.x,this.y);
+    gridObj[this.x][this.y].append(spitballDom);
+
+    this.spitballObj.push(spitballObj);
+    for (var i = 0; i < this.spitballObj.length; i++) {
+      this.spitballObj[i].launch();
+    }
+  }
+}
+class Spitball extends Straw {
+  constructor(grid){
+    super();
+    this.grid = grid;
+    this.spitball = $("<div>");
+    this.spitball.attr("class","spitball");
+    this.counter = 0;
+  }
+  getSpitball(){
+    return this.spitball;
+  }
+  launch(){
+    var gridObj = this.grid.getGrid();
+    if (this.x - this.counter >= 0) {
+      gridObj[this.x - this.counter][this.y].append(this.spitball);
+    }
+    if (gridObj[this.x - this.counter][this.y].children().attr("class") === 'erase') {
+
+      var str = gridObj[this.x - this.counter][this.y].children().attr("id");
+      str = str[str.length - 1];
+      enemyObjList.splice(str, 1);
+
+      gridObj[this.x - this.counter][this.y].children().remove();
+
+      this.spitball.remove();
+      this.spitball = null;
+    } else if (this.x - this.counter < 0){
+      this.spitball.remove();
+      this.spitball = null;
+    }
+    this.counter++;
   }
 }
 class Castle {
@@ -245,9 +296,12 @@ class Castle {
   getCastle(){
     return this.unit;
   }
+  getHealth(){
+    return this.health;
+  }
   damage(){
     this.health -= 1;
     console.log(this.health);
-    return this.health
+    return this.health;
   }
 }
